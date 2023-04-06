@@ -1,6 +1,4 @@
 using Fusion;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterMovementHandler : NetworkBehaviour
@@ -20,13 +18,13 @@ public class CharacterMovementHandler : NetworkBehaviour
         {
             // Move only one direction at a time
             Vector2 moveDirection;
-            if (Mathf.Abs(networkInputData.movementInput.y) > Mathf.Abs(networkInputData.movementInput.x)) 
+            if (Mathf.Abs(networkInputData.MovementInput.y) > Mathf.Abs(networkInputData.MovementInput.x)) 
             {
-                moveDirection = new Vector2(0, networkInputData.movementInput.y);
+                moveDirection = new Vector2(0, networkInputData.MovementInput.y);
             } 
             else
             {
-                moveDirection = new Vector2(networkInputData.movementInput.x, 0);
+                moveDirection = new Vector2(networkInputData.MovementInput.x, 0);
             }
             moveDirection.Normalize();
             _networkCharacterController.Move(moveDirection);

@@ -1,5 +1,5 @@
-using UnityEngine;
 using Fusion;
+using UnityEngine;
 
 public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 {
@@ -25,6 +25,8 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         {
             Debug.Log("Spawned remote player");
         }
+
+        gameObject.name = $"Player {Object.Id}";
     }
 
     public void PlayerLeft(PlayerRef player)

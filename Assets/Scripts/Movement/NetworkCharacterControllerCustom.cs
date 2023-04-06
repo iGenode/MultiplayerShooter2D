@@ -2,6 +2,7 @@ using System;
 using Fusion;
 using UnityEngine;
 
+// FIXME: move to a custom 2D controller
 [RequireComponent(typeof(CharacterController))]
 [OrderBefore(typeof(NetworkTransform))]
 [DisallowMultipleComponent]

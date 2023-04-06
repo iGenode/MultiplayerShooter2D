@@ -1,8 +1,8 @@
-using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -34,7 +34,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     // Collect and send input to the server
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        
+
         // If character input handler is not initialized and there is a local player
         if (_characterInputHandler == null && NetworkPlayer.Local != null)
         {
