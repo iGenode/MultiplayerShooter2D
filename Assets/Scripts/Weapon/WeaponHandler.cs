@@ -13,6 +13,7 @@ public class WeaponHandler : NetworkBehaviour
     private ParticleSystem _fireParticle;
 
     private NetworkObject _networkObject;
+    private HealthHandler _healthHandler;
 
     [Networked(OnChanged = nameof(OnFireChanged))]
     [HideInInspector]
@@ -24,15 +25,19 @@ public class WeaponHandler : NetworkBehaviour
     private void Awake()
     {
         _networkObject = GetComponent<NetworkObject>();
+        _healthHandler = GetComponent<HealthHandler>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput(out NetworkInputData networkInputData))
+        if (!_healthHandler.IsDead)
         {
-            if (networkInputData.IsFireButtonPressed)
+            if (GetInput(out NetworkInputData networkInputData))
             {
-                Fire(transform.up);
+                if (networkInputData.IsFireButtonPressed)
+                {
+                    Fire(transform.up);
+                }
             }
         }
     }
@@ -46,7 +51,7 @@ public class WeaponHandler : NetworkBehaviour
 
         StartCoroutine(FireNotification());
 
-        Runner.Spawn(_projectile, transform.position + aimDirection * 0.5f, transform.rotation, Object.InputAuthority, (runner, spawnedProjectile) =>
+        Runner.Spawn(_projectile, transform.position + aimDirection * 0.7f, transform.rotation, Object.InputAuthority, (runner, spawnedProjectile) =>
         {
             spawnedProjectile.GetComponent<ProjectileHandler>().FireProjectile(Object.InputAuthority);
         });

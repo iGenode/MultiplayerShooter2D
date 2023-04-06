@@ -65,8 +65,11 @@ public class ProjectileHandler : NetworkBehaviour
                     // If hit is on a Hitbox
                     if (hit.Hitbox != null)
                     {
+                        if (Object.HasStateAuthority)
+                        {
+                            hit.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage();
+                        }
 
-                        // TODO: Damage the target
                         Debug.Log($"Hit on {hit.Hitbox}");
                     }
 
