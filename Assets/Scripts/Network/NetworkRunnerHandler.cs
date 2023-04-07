@@ -13,17 +13,33 @@ public class NetworkRunnerHandler : MonoBehaviour
 
     private NetworkRunner _networkRunner;
 
-    private void Start()
+    private void Awake()
     {
-        _networkRunner = Instantiate(_networkRunnerPrefab);
-        _networkRunner.name = "Network Runner";
+        var networkRunnerInScene = FindObjectOfType<NetworkRunner>();
 
-        var clientTask = InitializeNetworkRunner(_networkRunner, GameMode.AutoHostOrClient, NetAddress.Any(), SceneManager.GetActiveScene().buildIndex, null);
-
-        Debug.Log("Server NetworkRunner started");
+        if (networkRunnerInScene != null)
+        {
+            _networkRunner = networkRunnerInScene;
+        }
     }
 
-    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, NetAddress address, SceneRef scene, Action<NetworkRunner> onInitialized)
+    private void Start()
+    {
+        if (_networkRunner == null)
+        {
+            _networkRunner = Instantiate(_networkRunnerPrefab);
+            _networkRunner.name = "Network Runner";
+
+            if (SceneManager.GetActiveScene().name != "Lobby")
+            {
+                // TODO: change to actual name of session
+                var clientTask = InitializeNetworkRunner(_networkRunner, GameMode.AutoHostOrClient, "TestSession", NetAddress.Any(), SceneManager.GetActiveScene().buildIndex, true, null);
+            }
+            Debug.Log("Server NetworkRunner started");
+        }
+    }
+
+    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName, NetAddress address, SceneRef scene, bool shouldHost, Action<NetworkRunner> onInitialized)
     {
         var sceneManager = runner.GetComponents(typeof(MonoBehaviour)).OfType<INetworkSceneManager>().FirstOrDefault();
 
@@ -36,9 +52,58 @@ public class NetworkRunnerHandler : MonoBehaviour
             GameMode = gameMode,
             Address = address,
             Scene = scene,
-            SessionName = "ChangeMe",
+            SessionName = sessionName,
+            DisableClientSessionCreation = shouldHost,
             Initialized = onInitialized,
             SceneManager = sceneManager
         });
     }
+
+    public void CreateGame(string sessionName, string sceneName)
+    {
+        Debug.Log($"Create session {sessionName} scene {sceneName}");
+
+        // Create a game as a host
+        var clientTask = InitializeNetworkRunner(
+            _networkRunner,
+            GameMode.Host,
+            sessionName,
+            NetAddress.Any(),
+            SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}"),
+            true,
+            null
+        );
+    }
+
+    public void JoinGame(string sessionName)
+    {
+        Debug.Log($"Join session {sessionName}");
+
+        // Join an existing game as a client
+        var clientTask = InitializeNetworkRunner(
+            _networkRunner,
+            GameMode.Client,
+            sessionName,
+            NetAddress.Any(),
+            SceneManager.GetActiveScene().buildIndex,
+            false,
+            null
+        );
+    }
+
+    // Join by sessionInfo      // Not used because it requires lobbies and searching for sessions
+    //public void JoinGame(SessionInfo sessionInfo)
+    //{
+    //    Debug.Log($"Join session {sessionInfo.Name}");
+
+    //    // Join an existing game as a client
+    //    var clientTask = InitializeNetworkRunner(
+    //        _networkRunner,
+    //        GameMode.Client,
+    //        sessionInfo.Name,
+    //        NetAddress.Any(),
+    //        SceneManager.GetActiveScene().buildIndex,
+    //        null
+    //    );
+    //}
 }

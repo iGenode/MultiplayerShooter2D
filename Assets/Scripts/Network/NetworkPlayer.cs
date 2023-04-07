@@ -1,12 +1,37 @@
 using Fusion;
+using TMPro;
 using UnityEngine;
 
 public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 {
     public static NetworkPlayer Local { get; set; }
 
+    [Header("Player UI")]
     [SerializeField]
     private GameObject _mobileInputUI;
+    //[SerializeField]
+    //private GameObject _messagesUi;
+
+    [Header("Player nickname")]
+    //[SerializeField]
+    //private PlayerData _playerData;
+    [SerializeField]
+    private TextMeshProUGUI _playerNicknameText;
+
+    //private bool _didSendJoinMessage = false;
+    //private NetworkInGameMessages _networkInGameMessages;
+
+    private string _nickname;
+
+    [Networked(OnChanged = nameof(OnNicknameChanged))]
+    [HideInInspector]
+    public NetworkString<_16> Nickname { get; set; }
+
+    //private void Awake()
+    //{
+    //    // TODO: move to a separate object
+    //    _networkInGameMessages = GetComponent<NetworkInGameMessages>();
+    //}
 
     public override void Spawned()
     {
@@ -17,6 +42,18 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
             // Logic for local player
             Local = this;
 
+            //RPC_SetNickname(_playerData.Nickname);
+            _nickname = PlayerPrefs.GetString("PlayerNickname");
+
+            RPC_SetNickname(_nickname);
+
+            //if (!_didSendJoinMessage)
+            //{
+            //    _networkInGameMessages.SendInGameRPCMessage(_nickname, "joined");
+
+            //    _didSendJoinMessage = true;
+            //}
+
             Debug.Log("Spawned local player");
         }
         else
@@ -24,11 +61,16 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
             // Logic for remote player
             // Hide controls of other players
             _mobileInputUI.SetActive(false);
+            //// Hide messages of other players
+            //_messagesUi.SetActive(false);
 
             Debug.Log("Spawned remote player");
         }
 
-        gameObject.name = $"Player {Object.Id}";
+        // Set the player as a player object
+        Runner.SetPlayerObject(Object.InputAuthority, Object);
+
+        gameObject.name = $"Player {Nickname}";
     }
 
     public void PlayerLeft(PlayerRef player)
@@ -38,5 +80,37 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         {
             Runner.Despawn(Object);
         }
+        if (Object.HasStateAuthority)
+        {
+            if (Runner.TryGetPlayerObject(player, out NetworkObject playerLeft))
+            {
+                if (playerLeft == Object)
+                {
+                    // TODO: send message
+                }
+            }
+        }
+    }
+
+    static void OnNicknameChanged(Changed<NetworkPlayer> changed)
+    {
+        Debug.Log($"@{Time.time} OnNicknameChanged value {changed.Behaviour.Nickname}");
+
+        changed.Behaviour.OnNicknameChanged();
+    }
+
+    private void OnNicknameChanged()
+    {
+        Debug.Log($"Nickname changed for player to {Nickname} for player {gameObject.name}");
+
+        _playerNicknameText.text = Nickname.ToString();
+    }
+
+    // Rpc from input authority to state authority for setting the nickname on the server
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetNickname(string nickname, RpcInfo info = default)
+    {
+        Debug.Log($"[RPC] SetNickname {nickname}");
+        this.Nickname = nickname;
     }
 }

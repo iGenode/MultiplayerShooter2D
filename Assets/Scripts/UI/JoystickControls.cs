@@ -21,7 +21,7 @@ public class JoystickControls : MonoBehaviour, IDragHandler, IPointerUpHandler, 
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_thumbTransform, eventData.position, null, out Vector2 offset);
         offset = Vector2.ClampMagnitude(offset, DragOffsetDistance) / DragOffsetDistance;
-        Debug.Log(offset);
+        //Debug.Log(offset);
         _thumbTransform.anchoredPosition = offset * DragMovementDistance;
 
         Vector2 temp = CalculateMovementInput(offset);
@@ -33,7 +33,7 @@ public class JoystickControls : MonoBehaviour, IDragHandler, IPointerUpHandler, 
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Pointer up");
+        //Debug.Log("Pointer up");
         _thumbTransform.anchoredPosition = default;
         OnMove?.Invoke(default);
     }

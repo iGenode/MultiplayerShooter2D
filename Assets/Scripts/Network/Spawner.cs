@@ -9,7 +9,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     private NetworkPlayer _playerPrefab;
 
-    CharacterInputHandler _characterInputHandler;
+    private CharacterInputHandler _characterInputHandler;
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
