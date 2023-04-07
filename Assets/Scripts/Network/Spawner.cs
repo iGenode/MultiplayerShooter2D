@@ -11,22 +11,18 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 
     CharacterInputHandler _characterInputHandler;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (runner.IsServer)
         {
+            // Happens on the server
             Debug.Log("OnPlayerJoined as server. Spawning player");
             // TODO: figure out spawn point logic
             runner.Spawn(_playerPrefab, Utils.GetRandomSpawnPoint(), Quaternion.identity, player);
         }
         else
         {
+            // Happens on the client
             Debug.Log("OnPlayerJoined");
         }
     }

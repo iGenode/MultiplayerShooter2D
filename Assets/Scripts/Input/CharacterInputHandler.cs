@@ -1,15 +1,35 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterInputHandler : MonoBehaviour
 {
+    [Header("Player input")]
+    [SerializeField]
+    private JoystickControls _joystickInput;
+    [SerializeField]
+    private Button _fireButton;
+
     private Vector2 _moveInputVector = Vector2.zero;
     private bool _isFireButtonPressed = false;
 
-    CharacterMovementHandler _characterMovementHandler;
+    private CharacterMovementHandler _characterMovementHandler;
 
     private void Awake()
     {
         _characterMovementHandler = GetComponent<CharacterMovementHandler>();
+
+        // TODO: remove listener somewhere?
+        _fireButton.onClick.AddListener(FireViaButton);
+    }
+
+    private void Start()
+    {
+        // If character has input authority
+        if (_characterMovementHandler.Object.HasInputAuthority)
+        {
+            // Subscribe to input events
+            _joystickInput.OnMove += MoveViaJoystick;
+        }
     }
 
     private void Update()
@@ -19,16 +39,17 @@ public class CharacterInputHandler : MonoBehaviour
         {
             return;
         }
-        // TODO: change input to touch
-        // Movement input
-        _moveInputVector.x = Input.GetAxis("Horizontal");
-        _moveInputVector.y = Input.GetAxis("Vertical");
+    }
 
-        // Fire input
-        if (Input.GetButtonDown("Fire1"))
-        {
-            _isFireButtonPressed = true;
-        }
+    private void MoveViaJoystick(Vector2 move)
+    {
+        _moveInputVector.x = move.x;
+        _moveInputVector.y = move.y;
+    }
+
+    private void FireViaButton()
+    {
+        _isFireButtonPressed = true;
     }
 
     public NetworkInputData GetNetworkInput()

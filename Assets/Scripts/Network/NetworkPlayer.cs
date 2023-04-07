@@ -5,11 +5,8 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 {
     public static NetworkPlayer Local { get; set; }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    [SerializeField]
+    private GameObject _mobileInputUI;
 
     public override void Spawned()
     {
@@ -17,12 +14,17 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
         if (Object.HasInputAuthority)
         {
+            // Logic for local player
             Local = this;
 
             Debug.Log("Spawned local player");
         }
         else
         {
+            // Logic for remote player
+            // Hide controls of other players
+            _mobileInputUI.SetActive(false);
+
             Debug.Log("Spawned remote player");
         }
 
@@ -31,7 +33,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     public void PlayerLeft(PlayerRef player)
     {
-        // TODO: is this the right way? was if (player == Object.InputAuthority)
+        // If client is still on the server (has input authority) - despawn the player that left
         if (player.IsValid == Object.HasInputAuthority)
         {
             Runner.Despawn(Object);
