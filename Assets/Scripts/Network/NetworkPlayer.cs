@@ -47,6 +47,9 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
             RPC_SetNickname(_nickname);
 
+            // Removing UI controls from player to fix input lag while changin player position
+            _mobileInputUI.transform.SetParent(null, true);
+
             //if (!_didSendJoinMessage)
             //{
             //    _networkInGameMessages.SendInGameRPCMessage(_nickname, "joined");
