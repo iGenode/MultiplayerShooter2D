@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HealthHandler : NetworkBehaviour
 {
+    // TODO: make all of these private set instead of public if it can be
     [Networked(OnChanged = nameof(OnHealthChanged))]
     [HideInInspector]
     public byte Health { get; set; }
@@ -26,6 +27,10 @@ public class HealthHandler : NetworkBehaviour
     [Header("Hit sprite")]
     [SerializeField]
     private SpriteRenderer _playerSprite;
+
+    [Header("Death Notification")]
+    [SerializeField]
+    private GameObjectEvent _deathEvent;
 
     private Color _defaultPlayerColor;
 
@@ -96,7 +101,19 @@ public class HealthHandler : NetworkBehaviour
         }
     }
 
+    public void OnTakeDamage(NetworkPlayer fromPlayer)
+    {
+        OnTakeDamage();
+        if (IsDead)
+        {
+            if (Object.HasStateAuthority)
+            {
+                fromPlayer.GetComponent<KillCounterHandler>().AddCount(1);
+            }
+        }
+    }
 
+    // Called on Health change
     static void OnHealthChanged(Changed<HealthHandler> changed)
     {
         Debug.Log($"@{Time.time} OnHealthChanged value {changed.Behaviour.Health}");
@@ -155,6 +172,7 @@ public class HealthHandler : NetworkBehaviour
         // Disable player's movement
         _characterMovement.SetCharacterControllerEnabled(false);
 
+        _deathEvent.RaiseEvent(gameObject);
         // TODO: death effects
     }
 }

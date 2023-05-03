@@ -49,6 +49,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
             // Removing UI controls from player to fix input lag while changin player position
             _mobileInputUI.transform.SetParent(null, true);
+            // Disabling UI controls until the game starts, unless it's already started
+            if (!GameManager.IsGameStarted)
+            {
+                _mobileInputUI.SetActive(false);
+                GameManager.GameStartedEvent += () => _mobileInputUI.SetActive(true);
+                GameManager.GameOverEvent += _ => _mobileInputUI.SetActive(false);
+            }
 
             //if (!_didSendJoinMessage)
             //{
@@ -74,6 +81,8 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         Runner.SetPlayerObject(Object.InputAuthority, Object);
 
         gameObject.name = $"Player {Nickname}";
+
+        PlayerList.AddToList(gameObject);
     }
 
     public void PlayerLeft(PlayerRef player)
@@ -87,10 +96,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         {
             if (Runner.TryGetPlayerObject(player, out NetworkObject playerLeft))
             {
+                Debug.Log($"In PlayerLeft, got {playerLeft} from TryGetPlayerObject");
                 if (playerLeft == Object)
                 {
                     // TODO: send message
                 }
+                // TODO: this might be wrond, test and clear this comment
+                PlayerList.RemoveFromList(playerLeft.gameObject);
             }
         }
     }
@@ -104,7 +116,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     private void OnNicknameChanged()
     {
-        Debug.Log($"Nickname changed for player to {Nickname} for player {gameObject.name}");
+        Debug.Log($"Nickname changed to {Nickname} for player {gameObject.name}");
 
         _playerNicknameText.text = Nickname.ToString();
     }

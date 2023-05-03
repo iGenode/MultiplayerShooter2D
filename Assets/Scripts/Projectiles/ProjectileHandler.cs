@@ -14,7 +14,10 @@ public class ProjectileHandler : NetworkBehaviour
     private LayerMask _layersToHit;
 
     // Fired by references
-    private PlayerRef _firedByPlayerRef;
+    private PlayerRef _playerRef;
+
+    // Player that fired the projectile reference
+    private NetworkPlayer _firedByPlayer;
 
     // Reference of a projectile network object
     private NetworkObject _networkObject;
@@ -31,11 +34,12 @@ public class ProjectileHandler : NetworkBehaviour
     // Lifetime
     private const int LifetimeSeconds = 6;
 
-    public void FireProjectile(PlayerRef firedByPlayerRef)
+    public void FireProjectile(PlayerRef playerRef, NetworkPlayer firedByPlayer)
     {
         _networkObject = GetComponent<NetworkObject>();
 
-        _firedByPlayerRef = firedByPlayerRef;
+        _playerRef = playerRef;
+        _firedByPlayer = firedByPlayer;
 
         _maxLifetimeTimer = TickTimer.CreateFromSeconds(Runner, LifetimeSeconds);
     }
@@ -44,6 +48,7 @@ public class ProjectileHandler : NetworkBehaviour
     {
         transform.position += ProjectileSpeed * Runner.DeltaTime * transform.up;
 
+        // Only handled on state authority
         if (Object.HasStateAuthority)
         {
             // If lifetime expired
@@ -55,7 +60,7 @@ public class ProjectileHandler : NetworkBehaviour
             }
 
             // Check if the projectile has hit anything
-            int hitCount = Runner.LagCompensation.OverlapSphere(transform.position, 0.175f, _firedByPlayerRef, _hits, _layersToHit, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority);
+            int hitCount = Runner.LagCompensation.OverlapSphere(transform.position, 0.175f, _playerRef, _hits, _layersToHit, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority);
 
             if (hitCount > 0)
             {
@@ -65,11 +70,8 @@ public class ProjectileHandler : NetworkBehaviour
                     // If hit is on a Hitbox
                     if (hit.Hitbox != null)
                     {
-                        if (Object.HasStateAuthority)
-                        {
-                            hit.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage();
-                        }
-
+                        hit.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage(_firedByPlayer);
+                   
                         Debug.Log($"Hit on {hit.Hitbox}");
                     }
 

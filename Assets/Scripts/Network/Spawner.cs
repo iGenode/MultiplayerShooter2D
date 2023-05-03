@@ -3,11 +3,15 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField]
     private NetworkPlayer _playerPrefab;
+    // TODO: is there a better place for this?
+    [SerializeField]
+    private GameObjectEvent _deathEvent;
 
     private CharacterInputHandler _characterInputHandler;
 
@@ -30,7 +34,6 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     // Collect and send input to the server
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-
         // If character input handler is not initialized and there is a local player
         if (_characterInputHandler == null && NetworkPlayer.Local != null)
         {
@@ -113,4 +116,15 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         //throw new NotImplementedException();
     }
 
+    private readonly UnityAction<GameObject> _deathHandler = _ => PlayerList.PlayerDied();
+
+    private void OnEnable()
+    {
+        _deathEvent.Event += _deathHandler;
+    }
+
+    private void OnDisable()
+    {
+        _deathEvent.Event -= _deathHandler;
+    }
 }

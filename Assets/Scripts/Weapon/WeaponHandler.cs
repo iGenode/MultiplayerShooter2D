@@ -12,7 +12,7 @@ public class WeaponHandler : NetworkBehaviour
     [SerializeField]
     private ParticleSystem _fireParticle;
 
-    private NetworkObject _networkObject;
+    private NetworkPlayer _networkPlayer;
     private HealthHandler _healthHandler;
 
     [Networked(OnChanged = nameof(OnFireChanged))]
@@ -24,13 +24,13 @@ public class WeaponHandler : NetworkBehaviour
 
     private void Awake()
     {
-        _networkObject = GetComponent<NetworkObject>();
+        _networkPlayer = GetComponent<NetworkPlayer>();
         _healthHandler = GetComponent<HealthHandler>();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (!_healthHandler.IsDead)
+        if (!_healthHandler.IsDead && GameManager.IsGameStarted && !GameManager.IsGameOver)
         {
             if (GetInput(out NetworkInputData networkInputData))
             {
@@ -53,7 +53,7 @@ public class WeaponHandler : NetworkBehaviour
 
         Runner.Spawn(_projectile, transform.position + aimDirection * 0.7f, transform.rotation, Object.InputAuthority, (runner, spawnedProjectile) =>
         {
-            spawnedProjectile.GetComponent<ProjectileHandler>().FireProjectile(Object.InputAuthority);
+            spawnedProjectile.GetComponent<ProjectileHandler>().FireProjectile(Object.InputAuthority, _networkPlayer);
         });
 
         _lastTimeFired = Time.time;

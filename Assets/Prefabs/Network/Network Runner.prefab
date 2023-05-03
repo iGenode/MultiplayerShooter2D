@@ -58,4 +58,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerPrefab: {fileID: 1378821164, guid: 47c444e1bbc41714a9377e8354b83602, type: 3}
-  _controlsUI: {fileID: 8998977566850248677, guid: 19ca0a7337f259a44ad6d251a99396f1, type: 3}
+  _deathEvent: {fileID: 11400000, guid: 5e007228cc47b704bb01d76279762c1f, type: 2}

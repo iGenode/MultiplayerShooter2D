@@ -16,7 +16,7 @@ public class CharacterMovementHandler : NetworkBehaviour
     {
         if (Object.HasStateAuthority)
         {
-            if (_healthHandler.IsDead)
+            if (_healthHandler.IsDead || !GameManager.IsGameStarted || GameManager.IsGameOver)
             {
                 return;
             }

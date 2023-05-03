@@ -32,9 +32,17 @@ public class NetworkRunnerHandler : MonoBehaviour
 
             if (SceneManager.GetActiveScene().name != "Lobby")
             {
+                // Is this for when the game starts on game scene instead of lobby?
                 // TODO: change to actual name of session
                 var clientTask = InitializeNetworkRunner(_networkRunner, GameMode.AutoHostOrClient, "TestSession", NetAddress.Any(), SceneManager.GetActiveScene().buildIndex, true, null);
             }
+
+            var gameOverCondition = new LastManStandingCondition();
+            var gameManager = new GameManager(gameOverCondition);
+            // TODO: not removing this currenlty
+            PlayerList.PlayerListChanged += _ => gameOverCondition.CheckCondition();
+            //GameManager.GameOverEvent += delegate (GameObject test) { Debug.Log("GAME OVER!"); };
+
             Debug.Log("Server NetworkRunner started");
         }
     }

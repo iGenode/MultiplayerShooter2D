@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1691791208609977939}
   - component: {fileID: 4007748262361966741}
   - component: {fileID: 6646488077084964198}
+  - component: {fileID: 2175245247613320753}
   - component: {fileID: 6517525908539597028}
   m_Layer: 0
   m_Name: Player
@@ -110,6 +111,7 @@ MonoBehaviour:
   - {fileID: 1691791208609977939}
   - {fileID: 4007748262361966741}
   - {fileID: 6646488077084964198}
+  - {fileID: 2175245247613320753}
   - {fileID: 6517525908539597028}
   SimulationBehaviours: []
 --- !u!114 &8882416535027040738
@@ -208,6 +210,7 @@ MonoBehaviour:
   _onHitColor: {r: 0.8396226, g: 0.1782218, b: 0.1782218, a: 0.84313726}
   _onHitImage: {fileID: 3843371896984273624}
   _playerSprite: {fileID: 3496915353682920998}
+  _deathEvent: {fileID: 11400000, guid: 5e007228cc47b704bb01d76279762c1f, type: 2}
 --- !u!114 &6646488077084964198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +227,20 @@ MonoBehaviour:
   _projectile: {fileID: 8123368457750796608, guid: 51bc14a1bafd3d64a9740d6cbd5b5f3d, type: 3}
   _fireParticle: {fileID: 4842163018947271721}
   _IsFiring: 0
+--- !u!114 &2175245247613320753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 285965909666450447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 179aa531130dd234f991003e9783fce9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  _Count: 0
 --- !u!114 &6517525908539597028
 MonoBehaviour:
   m_ObjectHideFlags: 0

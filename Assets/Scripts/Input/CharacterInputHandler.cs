@@ -32,15 +32,6 @@ public class CharacterInputHandler : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        // Checking if character has input authority to prevent running this for all players 
-        if (!_characterMovementHandler.Object.HasInputAuthority)
-        {
-            return;
-        }
-    }
-
     private void MoveViaJoystick(Vector2 move)
     {
         _moveInputVector.x = move.x;
